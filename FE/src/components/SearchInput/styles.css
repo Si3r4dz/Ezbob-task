@@ -1,51 +1,75 @@
-.google-search-wrapper {
-  position: relative;
-  width: 600px;
-  margin: 0 auto;
+.search-wrapper {
+    position: relative;
+    width: 600px;
+    margin: 0 auto;
 }
 
-.google-search-bar {
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  border: 1px solid #dfe1e5;
-  border-radius: 24px;
-  height: 44px;
-  padding: 0 14px;
-  box-sizing: border-box;
-  transition: box-shadow 0.2s ease-in-out;
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border: 1px solid #dfe1e5;
+    border-radius: 24px;
+    height: 44px;
+    padding: 0 14px;
+    box-sizing: border-box;
+    transition: box-shadow 0.2s ease-in-out;
 }
 
-.google-search-bar:focus-within {
-  box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+.search-bar.active {
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+.search-bar.active {
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
+.search-bar:focus-within {
+    box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+}
+
+.separator-bar {
+    width: 1px;
+    height: 25px;
+    background-color: #dfe1e5;
+    margin-right: 8px;
+}
+
+.separator-bar {
+    width: 1px;
+    height: 25px;
+    background-color: #dfe1e5;
+    margin-right: 8px;
 }
 
 .search-icon-area,
 .clear-icon-area,
 .mic-icon-area {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #9aa0a6;
-  margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #9aa0a6;
+    margin-right: 8px;
 }
 
-.google-search-input {
-  flex: 1;
-  font-size: 16px;
-  border: none;
-  outline: none;
-  padding: 0;
-  margin-right: 8px;
-  background: transparent;
-  font-family: Arial, sans-serif;
+.search-input {
+    flex: 1;
+    font-size: 16px;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin-right: 8px;
+    background: transparent;
+    font-family: Arial, sans-serif;
 }
 
 .magnify-icon,
 .close-icon,
 .mic-icon {
-  fill: currentColor;
-  width: 20px;
-  height: 20px;
+    fill: currentColor;
+    width: 20px;
+    height: 20px;
 }
