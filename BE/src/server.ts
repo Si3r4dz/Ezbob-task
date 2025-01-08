@@ -8,7 +8,6 @@ const PORT = 3001;
 app.use(cors());
 app.use(express.json());
 
-// GET /api/search?query=something&page=1&pageSize=10
 app.get('/api/search', (req: Request, res: Response) => {
   const query = (req.query.query as string) || '';
   const page = parseInt(req.query.page as string) || 1;

@@ -1,158 +1,192 @@
 import React, {
-  useContext,
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  ChangeEvent,
-  KeyboardEvent,
-  memo,
+    useContext,
+    useState,
+    useRef,
+    useEffect,
+    useCallback,
+    ChangeEvent,
+    KeyboardEvent,
+    memo
 } from 'react';
 import { SearchContext } from '../SearchProvider/SearchProvider';
 import { DBItem } from '../../services/SearchService';
 import AutocompleteList from '../AutocompleteList/AutocompleteList';
-import {ReactComponent as MagnifyingGlassIcon} from '../../assets/icons/magnify-icon.svg';
-import {ReactComponent as CloseIcon} from '../../assets/icons/close-icon.svg';
-import {ReactComponent as MicrophoneIcon} from '../../assets/icons/mic-icon.svg';
 import './styles.css';
+import MicIcon from '../IconComponent/MicIcon';
+import CloseIcon from '../IconComponent/CloseIcon';
+import MagnifyingGlassIcon from '../IconComponent/MagnifyingGlassIcon';
 
 const SearchInput = () => {
-  const ctx = useContext(SearchContext);
-  if (!ctx) {
-    throw new Error('SearchInput must be used within a SearchProvider');
-  }
-
-  const { autocompleteSearch, addToSearchHistory, performSearch } = ctx;
-
-  const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<DBItem[]>([]);
-  const [showAutocomplete, setShowAutocomplete] = useState(true);
-
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
+    const ctx = useContext(SearchContext);
+    if (!ctx) {
+        throw new Error('SearchInput must be used within a SearchProvider');
     }
-  }, []);
 
-  const handleChange = useCallback(
-    async (e: ChangeEvent<HTMLInputElement>) => {
-      if (!showAutocomplete) setShowAutocomplete(true);
+    const { autocompleteSearch, addToSearchHistory, performSearch } = ctx;
 
-      const value = e.target.value;
-      setQuery(value);
+    const [query, setQuery] = useState('');
+    const [suggestions, setSuggestions] = useState<DBItem[]>([]);
+    const [showAutocomplete, setShowAutocomplete] = useState(true);
+    const [selectedIndex, setSelectedIndex] = useState<number>(-1);
 
-      if (!value) {
-        setSuggestions([]);
-        return;
-      }
+    const inputRef = useRef<HTMLInputElement | null>(null);
 
-      try {
-        const result = await autocompleteSearch(value);
-        // Only update if suggestions actually changed
-        setSuggestions((prev) => {
-          if (
-            prev.length === result.length &&
-            prev.every((item, i) => item.id === result[i].id)
-          ) {
-            return prev;
-          }
-          return result;
-        });
-      } catch (err) {
-        console.error('Autocomplete error:', err);
-      }
-    },
-    [autocompleteSearch, showAutocomplete]
-  );
-
-  const handleClear = useCallback(() => {
-    setQuery('');
-    setSuggestions([]);
-    inputRef.current?.focus();
-  }, [setQuery]);
-
-  const handleFocus = useCallback(() => {
-    if (suggestions.length > 0) {
-      setShowAutocomplete(true);
-    }
-  }, [suggestions]);
-
-  const handleBlur = useCallback(() => {
-    const timer = setTimeout(() => {
-      setShowAutocomplete(false);
-    }, 200);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // On Enter = do a full search
-  const handleKeyDown = useCallback(
-    async (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        if (query) {
-          try {
-            await performSearch(query);
-            addToSearchHistory(query);
-            setShowAutocomplete(false);
-          } catch (err) {
-            console.error('Search error:', err);
-          }
+    useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.focus();
         }
-      }
-    },
-    [query, performSearch,addToSearchHistory]
-  );
+    }, []);
 
-  // If user clicks on a suggestion
-  const handleSelect = useCallback(
-    async (selected: string) => {
-      setQuery(selected);
-      setShowAutocomplete(false);
+    const handleChange = useCallback(
+        async (e: ChangeEvent<HTMLInputElement>) => {
+            if (!showAutocomplete) setShowAutocomplete(true);
+            if (selectedIndex !== -1) setSelectedIndex(-1);
 
-      try {
-        await performSearch(selected);
-        addToSearchHistory(selected);
-      } catch (err) {
-        console.error('Search error:', err);
-      }
-    },
-    [performSearch, addToSearchHistory, ]
-  );
+            const value = e.target.value;
+            setQuery(value);
 
-  return (
-  <div className={`google-search-wrapper `}>
-    <div className="google-search-bar">
-      <div className="search-icon-area">
-        <MagnifyingGlassIcon />
-      </div>
-      <input
-        ref={inputRef}
-        type="text"
-        className="google-search-input"
-        value={query}
-        placeholder="Search Google or type a URL"
-        onChange={handleChange}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
-      />
-      {query && (
-        <div className="clear-icon-area" onClick={handleClear}>
-          <CloseIcon />
+            if (!value) {
+                setSuggestions([]);
+                return;
+            }
+
+            try {
+                const result = await autocompleteSearch(value);
+                // Only update if suggestions actually changed
+                setSuggestions((prev) => {
+                    if (
+                        prev.length === result?.length &&
+                        prev.every((item, i) => item.id === result[i].id)
+                    ) {
+                        return prev;
+                    }
+                    return result;
+                });
+            } catch (err) {
+                if (err instanceof Error && !(err as any).isCanceled) {
+                    console.error('Autocomplete error:', err);
+                }
+            }
+        },
+        [autocompleteSearch, showAutocomplete, setSelectedIndex, selectedIndex]
+    );
+
+    const handleClear = useCallback(() => {
+        setQuery('');
+        setSuggestions([]);
+        setSelectedIndex(-1);
+        inputRef.current?.focus();
+    }, []);
+
+    const handleFocus = useCallback(() => {
+        if (suggestions.length > 0) {
+            setShowAutocomplete(true);
+        }
+    }, [suggestions]);
+
+    const handleBlur = useCallback(() => {
+        const timer = setTimeout(() => {
+            setShowAutocomplete(false);
+        }, 200);
+        return () => clearTimeout(timer);
+    }, []);
+
+    const handleSelect = useCallback(
+        async (selected: string) => {
+            setQuery(selected);
+            setShowAutocomplete(false);
+            setSelectedIndex(-1);
+
+            try {
+                await performSearch(selected);
+                addToSearchHistory(selected);
+            } catch (err) {
+                console.error('Search error:', err);
+            }
+        },
+        [performSearch, addToSearchHistory]
+    );
+
+    const handleKeyDown = useCallback(
+        async (e: KeyboardEvent<HTMLInputElement>) => {
+            if (!showAutocomplete) setShowAutocomplete(true);
+            switch (e.key) {
+                case 'ArrowDown':
+                    if (suggestions.length > 0) {
+                        setSelectedIndex((prev) => (prev + 1) % suggestions.length);
+                    }
+                    break;
+                case 'ArrowUp':
+                    if (suggestions.length > 0) {
+                        setSelectedIndex((prev) => {
+                            return (prev - 1 + suggestions.length) % suggestions.length;
+                        });
+                    }
+                    break;
+                case 'Enter':
+                    e.preventDefault();
+                    if (selectedIndex >= 0 && suggestions[selectedIndex]) {
+                        await handleSelect(suggestions[selectedIndex].title);
+                    } else if (query) {
+                        await handleSelect(query);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        },
+        [suggestions, selectedIndex, showAutocomplete, handleSelect, query]
+    );
+
+    useEffect(() => {
+        if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
+            const selected = suggestions[selectedIndex].title;
+            setQuery(selected);
+        }
+    }, [selectedIndex, suggestions]);
+
+    const isAutoCompleteVisible = suggestions?.length > 0 && showAutocomplete;
+
+    return (
+        <div className="search-wrapper">
+            <div className={`search-bar ${isAutoCompleteVisible ? 'active' : ''}`}>
+                <div className="search-icon-area">
+                    <MagnifyingGlassIcon />
+                </div>
+                <input
+                    ref={inputRef}
+                    type="text"
+                    className="search-input"
+                    value={query}
+                    placeholder="Search in SEARCHER"
+                    onChange={handleChange}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                    onKeyDown={handleKeyDown} // arrow logic is here
+                />
+                {query && (
+                    <>
+                        <div className="clear-icon-area" onClick={handleClear}>
+                            <CloseIcon />
+                        </div>
+                        <div className="separator-bar" />
+                    </>
+                )}
+                <div className="mic-icon-area">
+                    <MicIcon />
+                </div>
+            </div>
+
+            {isAutoCompleteVisible && (
+                <AutocompleteList
+                    suggestions={suggestions}
+                    onSelect={handleSelect}
+                    selectedIndex={selectedIndex}
+                />
+            )}
         </div>
-        )}
-      <div className="mic-icon-area">
-        <MicrophoneIcon />
-      </div>
-    </div>
-    {showAutocomplete && suggestions.length > 0 && (
-      <AutocompleteList suggestions={suggestions} onSelect={handleSelect} />
-    )}
-  </div>
-  );
+    );
 };
 
 export default memo(SearchInput);
+

@@ -1,21 +1,21 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 15vh;
-  text-align: center;
-  font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15vh;
+    text-align: center;
+    font-family: Arial, sans-serif;
 }
 
 .logo img {
-  width: 272px;
-  height: 92px;
-  margin-bottom: 20px;
+    width: 272px;
+    height: 92px;
+    margin-bottom: 20px;
 }
 
 .search-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-items: center;
 }
