@@ -189,4 +189,3 @@ const SearchInput = () => {
 };
 
 export default memo(SearchInput);
-

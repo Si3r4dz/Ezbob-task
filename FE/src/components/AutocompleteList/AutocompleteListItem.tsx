@@ -1,5 +1,6 @@
 import React from 'react';
 import { DBItem } from '../../services/SearchService';
+import MagnifyingGlassIcon from '../IconComponent/MagnifyingGlassIcon';
 
 interface AutocompleteListItemProps {
     item: DBItem;
@@ -22,9 +23,15 @@ const AutocompleteListItem: React.FC<AutocompleteListItemProps> = ({
             className={`autocomplete-item ${isInHistory ? 'in-history' : ''} ${isSelected ? 'selected' : ''}`}
             onMouseDown={() => handleClick(item)}
         >
-            <span className="item-title">{item.title}</span>
+            <div className={`autocomplete-item-icon`}>
+                <MagnifyingGlassIcon />
+            </div>
+            <span className="autocomplete-item-title">{item.title}</span>
             {isInHistory && (
-                <button className="remove-button" onMouseDown={(e) => handleRemove(e, item.title)}>
+                <button
+                    className="remove-button"
+                    onMouseDown={(e) => handleRemove(e, item.title)}
+                >
                     Remove
                 </button>
             )}

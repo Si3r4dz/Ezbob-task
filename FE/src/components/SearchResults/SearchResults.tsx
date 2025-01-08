@@ -40,7 +40,6 @@ const SearchResults: FC = () => {
                                 <img
                                     src={item.imageUrl || defaultImageUrl}
                                     alt={item.title}
-                                    loading="lazy"
                                 />
                             </div>
                             <div className="result-info">
@@ -76,4 +75,3 @@ const SearchResults: FC = () => {
 };
 
 export default memo(SearchResults);
-

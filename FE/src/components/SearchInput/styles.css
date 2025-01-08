@@ -22,8 +22,8 @@
 }
 
 .search-bar.active {
-  border-bottom-right-radius: 0px;
-  border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
 }
 
 .search-bar:focus-within {

@@ -35,13 +35,14 @@
     background-color: #e0e0e0;
 }
 
-.autocomplete-item::before {
-    content: '';
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    margin-right: 12px;
-    opacity: 0.6;
+.autocomplete-item-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.autocomplete-item-icon {
+    margin-right: 10px;
 }
 
 .in-history {
